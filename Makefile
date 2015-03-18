@@ -2,13 +2,8 @@
 # propeller-load Makefile #
 ###########################
 
-ifndef BUILDROOT
-BUILDROOT=.
-endif
-
-ifndef TARGET
-TARGET=/opt/parallax
-endif
+BUILDROOT?=.
+TARGET?=/opt/parallax
 
 SRCDIR=src
 SPINDIR=spin
@@ -73,7 +68,7 @@ LDFLAGS=$(CFLAGS)
 SPINFLAGS= -I$(SPINDIR)
 
 # for compiling PASM external memory drivers
-SPIN_DAT=spin2cpp --dat
+SPIN_DAT=$(SPINCMP) -c
 
 ##################
 # DEFAULT TARGET #
@@ -128,10 +123,6 @@ $(OBJDIR)/loadelf.o \
 $(OBJDIR)/packet.o \
 $(OBJDIR)/PLoadLib.o \
 $(OBJDIR)/p1image.o \
-$(OBJDIR)/p2image.o \
-$(OBJDIR)/p2loader.o \
-$(OBJDIR)/p2booter.o \
-$(OBJDIR)/p2flasher.o \
 $(OBJDIR)/config.o \
 $(OBJDIR)/expr.o \
 $(OBJDIR)/system.o \
@@ -141,6 +132,12 @@ $(OBJDIR)/serial_helper2.o \
 $(OBJDIR)/flash_loader.o \
 $(OBJDIR)/flash_loader2.o \
 $(foreach x, $(OSINT), $(OBJDIR)/$(x).o)
+
+P2OBJS=\
+$(OBJDIR)/p2image.o \
+$(OBJDIR)/p2loader.o \
+$(OBJDIR)/p2booter.o \
+$(OBJDIR)/p2flasher.o
 
 IMAGE_SIZE_OBJS=\
 $(OBJDIR)/propeller-elf-image-size.o \

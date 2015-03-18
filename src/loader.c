@@ -395,6 +395,7 @@ static int LoadInternalImage(System *sys, BoardConfig *config, char *path, int f
     }
 
     /* handle propeller 2 loads */
+#ifdef SUPPORT_P2
     if (ELF_CHIP(&c->hdr) == ELF_CHIP_P2) {
         int baudrate;
         GetNumericConfigField(config, "baudrate", &baudrate);
@@ -406,6 +407,7 @@ static int LoadInternalImage(System *sys, BoardConfig *config, char *path, int f
     
     /* otherwise, handle propeller 1 loads */
     else {
+#endif
     
         /* determine the download mode */
         if (flags & LFLAG_WRITE_EEPROM)
@@ -420,7 +422,9 @@ static int LoadInternalImage(System *sys, BoardConfig *config, char *path, int f
             free(imagebuf);
             return Error("load failed");
         }
+#ifdef SUPPORT_P2
     }
+#endif
     
     /* free the image buffer */
     free(imagebuf);

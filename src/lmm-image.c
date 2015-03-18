@@ -44,9 +44,11 @@ uint8_t *BuildInternalImage(BoardConfig *config, ElfContext *c, uint32_t *pStart
     PatchVariables(config, c, imagebuf, 0, NULL);
     
     /* update the image header */
+#ifdef SUPPORT_P2
     if (ELF_CHIP(&c->hdr) == ELF_CHIP_P2)
         p2_UpdateHeader(config, imagebuf, imageSize);
     else
+#endif
         p1_UpdateHeader(config, imagebuf, imageSize);
     
     /* return the image */
