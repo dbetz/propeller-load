@@ -30,7 +30,6 @@ PROPCFLAGS=-mp2
 PROPOBJDIR=$(BUILDROOT)/obj/propeller
 
 ifeq ($(OS),linux)
-SPINCMP?=openspin
 CFLAGS += -DLINUX
 EXT=
 OSINT=osint_linux
@@ -38,7 +37,6 @@ LIBS=
 endif
 
 ifeq ($(OS),cygwin)
-SPINCMP?=openspin.exe
 CFLAGS += -DCYGWIN
 EXT=.exe
 OSINT=osint_cygwin enumcom
@@ -46,7 +44,6 @@ LIBS=-lsetupapi
 endif
 
 ifeq ($(OS),msys)
-SPINCMP?=openspin.exe
 CFLAGS += -DMINGW
 EXT=.exe
 OSINT=osint_mingw enumcom
@@ -54,12 +51,13 @@ LIBS=-lsetupapi
 endif
 
 ifeq ($(OS),macosx)
-SPINCMP?=openspin
 CFLAGS += -DMACOSX
 EXT=
 OSINT=osint_linux
 LIBS=
 endif
+
+SPINCMP=openspin
 
 CFLAGS+=$(DEBUG) -Wall -I$(SRCDIR)/common -I$(SRCDIR)/runtime -I$(SRCDIR)/loader
 LDFLAGS=$(CFLAGS)
