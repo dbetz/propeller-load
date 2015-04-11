@@ -74,7 +74,7 @@ SPIN_DAT=$(SPINCMP) -c
 
 .PHONY:	all
 
-all:	info propeller-load drivers sd-loader propeller-elf-image-size \
+all:	info propeller-load drivers sd-loader propeller-elf-image-size gdbstub \
 $(OBJDIR)/serial_helper.binary \
 $(OBJDIR)/serial_helper2.binary
 
@@ -282,7 +282,6 @@ $(OBJDIR)/%.o:	$(OBJDIR)/%.c $(HDRS)
 ################
 
 .PHONY:	propeller-load
-.NOTPARALLEL: propeller-load
 
 propeller-load:		$(BINDIR)/propeller-load$(EXT)
 
@@ -296,6 +295,10 @@ propeller-elf-image-size:		$(BINDIR)/propeller-elf-image-size$(EXT)
 $(BINDIR)/propeller-elf-image-size$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-created $(IMAGE_SIZE_OBJS)
 	@$(TOOLCC) $(LDFLAGS) -o $@ $(IMAGE_SIZE_OBJS)
 	@$(ECHO) $@
+
+.PHONY:	gdbstub
+gdbstub:
+		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub
 
 #########
 # RULES #
@@ -336,6 +339,7 @@ $(BINDIR)/bin2c$(EXT):	$(OBJDIR)/dir-created $(SRCDIR)/tools/bin2c.c
 install:	all $(INSTALLBINDIR)/dir-created $(INSTALLLIBDIR)/dir-created
 	$(CP) -f $(BUILDROOT)/bin/$(OS)/propeller-load$(EXT) $(INSTALLBINDIR)
 	$(CP) -f $(BUILDROOT)/bin/$(OS)/propeller-elf-image-size$(EXT) $(INSTALLBINDIR)
+	$(CP) -f $(BUILDROOT)/gdbstub/gdbstub$(EXT) $(INSTALLBINDIR)
 	$(CP) -f $(DRVDIR)/*.dat $(DRVDIR)/*.elf $(INSTALLLIBDIR)
 	$(CP) -f xmem-drivers/*.cfg $(INSTALLLIBDIR)
 	$(CP) -f xmem-drivers/boards.txt $(INSTALLLIBDIR)
