@@ -282,7 +282,6 @@ $(OBJDIR)/%.o:	$(OBJDIR)/%.c $(HDRS)
 ################
 
 .PHONY:	propeller-load
-
 propeller-load:		$(BINDIR)/propeller-load$(EXT)
 
 $(BINDIR)/propeller-load$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-created bin2c $(OBJS)
@@ -297,7 +296,7 @@ $(BINDIR)/propeller-elf-image-size$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-cr
 	@$(ECHO) $@
 
 .PHONY:	gdbstub
-gdbstub:
+gdbstub:	propeller-load
 		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub LOAD=$(realpath $(BINDIR))/propeller-load
 
 #########
