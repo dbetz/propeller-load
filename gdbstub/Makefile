@@ -1,7 +1,6 @@
 ifndef BUILDROOT
 BUILDROOT=.
 endif
-$(warning BUILDROOT $(BUILDROOT))
 
 CC=gcc
 NATIVECC=gcc
@@ -14,7 +13,8 @@ LOADERSRC=../src
 CFLAGS=-Wall -I$(LOADERSRC)
 SPINFLAGS=-Ogxr
 
-OBJDIR=$(BUILDROOT)
+OBJDIR=$(BUILDROOT)/obj
+BINDIR=$(BUILDROOT)/bin
 
 vpath %.c $(LOADERSRC)
 vpath %.h $(LOADERSRC)
@@ -47,7 +47,7 @@ OSINT=osint_linux
 LIBS=
 endif
 
-TARGET=$(BUILDROOT)/gdbstub$(EXT)
+EXE=$(BINDIR)/gdbstub$(EXT)
 
 OBJS=$(OBJDIR)/gdbstub.o $(OBJDIR)/config.o $(OBJDIR)/expr.o \
 	$(OBJDIR)/system.o \
@@ -56,45 +56,46 @@ OBJS=$(OBJDIR)/gdbstub.o $(OBJDIR)/config.o $(OBJDIR)/expr.o \
 	$(foreach x, $(OSINT), $(OBJDIR)/$(x).o) \
 	$(OBJDIR)/kernel_image.o
 
-all:	dir bin2c$(EXT) $(TARGET)
+all:	dirs $(OBJDIR)/bin2c$(EXT) $(EXE)
 
-dir:
+dirs:
 	mkdir -p $(OBJDIR)
+	mkdir -p $(BINDIR)
 
-$(TARGET):	$(OBJS)
+$(EXE):	$(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
 
 $(OBJDIR)/%.o:	%.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+$(OBJDIR)/%.o:	$(OBJDIR)/%.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 ################
 # DUMMY KERNEL #
 ################
 
-kernel_image.elf:	kernel.c
+$(OBJDIR)/kernel_image.elf:	kernel.c
 	$(PROPCC) -Os -mcog -fomit-frame-pointer -o $@ $<
 
 ###########################
 # C TO BINARY IMAGE ARRAY #
 ###########################
 
-%_binary.elf:	%.c
-	$(PROPCC) -mlmm -g -o $@ $< 
-
-%.binary:	%.elf
+$(OBJDIR)/%.binary:	$(OBJDIR)/%.elf
 	$(LOAD) -s $<
 
-%.c:	%.binary
-	./bin2c$(EXT) $< $@
+$(OBJDIR)/%.c:	$(OBJDIR)/%.binary
+	$(OBJDIR)/bin2c$(EXT) $< $@
 
 #########
 # TOOLS #
 #########
 
-bin2c$(EXT):	$(LOADERSRC)/tools/bin2c.c
+$(OBJDIR)/bin2c$(EXT):	$(LOADERSRC)/tools/bin2c.c
 	$(NATIVECC) $(CFLAGS) $(LDFLAGS) $< -o $@
 
 .PHONY:	clean
 clean:
-	$(RM) -rf $(TARGET) $(OBJS) bin2c *.log kernel_image.*
-	$(RM) -f obj
+	$(RM) -rf $(OBJDIR)
+	$(RM) -rf $(BINDIR)
