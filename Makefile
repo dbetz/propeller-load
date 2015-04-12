@@ -298,7 +298,7 @@ $(BINDIR)/propeller-elf-image-size$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-cr
 
 .PHONY:	gdbstub
 gdbstub:
-		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub
+		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub LOAD=$(realpath $(BINDIR))/propeller-load
 
 #########
 # RULES #
