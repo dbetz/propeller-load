@@ -58,6 +58,11 @@ LIBS=
 endif
 
 SPINCMP=openspin
+ifeq ($(CROSS),)
+LOAD=$(realpath $(BINDIR))/propeller-load
+else
+LOAD=propeller-load
+endif
 
 CFLAGS+=$(DEBUG) -Wall -I$(SRCDIR)/common -I$(SRCDIR)/runtime -I$(SRCDIR)/loader
 LDFLAGS=$(CFLAGS)
@@ -297,7 +302,7 @@ $(BINDIR)/propeller-elf-image-size$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-cr
 
 .PHONY:	gdbstub
 gdbstub:	propeller-load
-		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub LOAD=$(realpath $(BINDIR))/propeller-load
+		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub LOAD=$(LOAD)
 
 #########
 # RULES #
