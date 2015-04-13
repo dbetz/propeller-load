@@ -214,7 +214,7 @@ $(OBJDIR)/%.binary:	$(SPINDIR)/%.spin $(SPIN_SRCS)
 	@$(SPINCMP) -b $(SPINFLAGS) -o $@ $<
 	@$(ECHO) $@
 
-$(OBJDIR)/%.c:	$(OBJDIR)/%.binary
+$(OBJDIR)/%.c:	$(OBJDIR)/%.binary bin2c
 	@$(BINDIR)/bin2c$(EXT) $< $@
 	@$(ECHO) $@
 
@@ -253,7 +253,7 @@ $(DRVDIR)/sst_%_xmem.dat:	$(XMEMDRIVERDIR)/%_xmem.spin $(XMEM_DRIVER_COMMON)
 # DAT TO C #
 ############
 
-$(OBJDIR)/%.c:	$(OBJDIR)/%.dat
+$(OBJDIR)/%.c:	$(OBJDIR)/%.dat bin2c
 	@$(BINDIR)/bin2c$(EXT) $< $@
 	@$(ECHO) $@
 
