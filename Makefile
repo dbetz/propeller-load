@@ -15,6 +15,7 @@ BINDIR=$(BUILDROOT)/bin/$(OS)
 DRVDIR=$(BUILDROOT)/propeller-load
 INSTALLBINDIR=$(TARGET)/bin
 INSTALLLIBDIR=$(TARGET)/propeller-load
+INSTALLGDBDIR=$(TARGET)/lib/gdb
 
 CC=gcc
 TOOLCC=$(CC)
@@ -340,10 +341,11 @@ $(BINDIR)/bin2c$(EXT):	$(OBJDIR)/dir-created $(SRCDIR)/tools/bin2c.c
 ##################
 
 .PHONY:	install
-install:	all $(INSTALLBINDIR)/dir-created $(INSTALLLIBDIR)/dir-created
+install:	all $(INSTALLBINDIR)/dir-created $(INSTALLLIBDIR)/dir-created $(INSTALLGDBDIR)/dir-created
 	$(CP) -f $(BUILDROOT)/bin/$(OS)/propeller-load$(EXT) $(INSTALLBINDIR)
 	$(CP) -f $(BUILDROOT)/bin/$(OS)/propeller-elf-image-size$(EXT) $(INSTALLBINDIR)
 	$(CP) -f $(BUILDROOT)/gdbstub/bin/gdbstub$(EXT) $(INSTALLBINDIR)
 	$(CP) -f $(DRVDIR)/*.dat $(DRVDIR)/*.elf $(INSTALLLIBDIR)
 	$(CP) -f xmem-drivers/*.cfg $(INSTALLLIBDIR)
 	$(CP) -f xmem-drivers/boards.txt $(INSTALLLIBDIR)
+	$(CP) -f gdbstub/gdbinit.propeller $(INSTALLGDBDIR)/gdbinit
