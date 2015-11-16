@@ -1,3 +1,5 @@
+Prerequisites: propgcc and openspin
+
 To build:
 
 source setenv.linux
