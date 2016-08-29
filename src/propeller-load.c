@@ -414,7 +414,11 @@ It can be used on any board with an SD card slot.\n\
 #ifdef RASPBERRY_PI
 printf("\
 \n\
-This version supports -Dreset=gpio to use gpio 17 to reset the Propeller board.\n\
+This version supports -Dreset=gpio to reset the Propeller board. The default is pin number 17\n\
+unless the environment variable PROPELLER_LOAD_GPIO is set to another value.\n\
+It also allows -Dreset=gpio<n> to use gpio <n> to reset the Propeller board.\n\
+For example:\n\
+  -Dreset=gpio12 to reset using gpio 12\n\
 ");
 #endif
     exit(1);
