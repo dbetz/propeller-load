@@ -146,6 +146,7 @@ uint8_t *BuildExternalImage(BoardConfig *config, ElfContext *c, uint32_t *pLoadA
 #ifdef DEBUG_BUILD_EXTERNAL_IMAGE
     printf("populate init table\n");
 #endif
+    initSection = (InitSection *)(imagebuf + dataSize);
     for (i = 0; i < c->hdr.phnum; ++i) {
         if (!LoadProgramTableEntry(c, i, &program)) {
             free(imagebuf);
