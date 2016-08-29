@@ -55,7 +55,7 @@ uint8_t *BuildExternalImage(BoardConfig *config, ElfContext *c, uint32_t *pLoadA
     char *initSectionName = ELF_VERSION(&c->hdr) == ELF_VERSION_UNKNOWN ? ".header" : ".init";
     ElfProgramHdr program, program_kernel, program_header, program_hub;
     int dataSize, initTableSize, imageSize, ki, hi, si, i;
-    InitSection *initSectionTable, *initSection;
+    InitSection *initSection;
     uint8_t *imagebuf, *buf;
     uint32_t endAddress;
     ImageHdr *image;
@@ -146,7 +146,6 @@ uint8_t *BuildExternalImage(BoardConfig *config, ElfContext *c, uint32_t *pLoadA
 #ifdef DEBUG_BUILD_EXTERNAL_IMAGE
     printf("populate init table\n");
 #endif
-    initSectionTable = initSection = (InitSection *)(imagebuf + dataSize);
     for (i = 0; i < c->hdr.phnum; ++i) {
         if (!LoadProgramTableEntry(c, i, &program)) {
             free(imagebuf);

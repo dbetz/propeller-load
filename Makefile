@@ -1,4 +1,4 @@
-###########################
+##########################
 # propeller-load Makefile #
 ###########################
 
@@ -34,6 +34,14 @@ ifeq ($(OS),linux)
 CFLAGS += -DLINUX
 EXT=
 OSINT=osint_linux
+LIBS=
+endif
+
+ifeq ($(OS),raspberrypi)
+OS=linux
+CFLAGS+=-DLINUX -DRASPBERRY_PI
+EXT=
+OSINT=osint_linux gpio_sysfs
 LIBS=
 endif
 
@@ -105,7 +113,7 @@ clean:
 	@$(RM) -f -r $(DRVDIR)
 	@$(RM) -f *.binary
 	@$(MAKE) -C sdloader BUILDROOT=$(realpath $(BUILDROOT)) clean
-	@$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT)) clean
+	@$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub clean
 
 .PHONY:
 clean-all:	clean

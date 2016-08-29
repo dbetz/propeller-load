@@ -1,9 +1,12 @@
 Prerequisites: propgcc and openspin
 
-To build:
+To build for Linux:
 
-source setenv.linux
-make
+OS=linux make
+
+To build for RaspberryPi or other similar ARM-based boards:
+
+OS=raspberrypi make
 
 To load a cog or lmm binary and start the terminal emulator:
 
