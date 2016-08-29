@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -63,12 +64,24 @@ int use_reset_method(char* method)
     else if (strcasecmp(method, "rts") == 0)
        reset_method = RESET_WITH_RTS;
 #ifdef RASPBERRY_PI
-    else if (strcasecmp(method, "gpio") == 0)
+    else if (strncasecmp(method, "gpio", 4) == 0)
     {
+        int pin = 17;   // default to pin 17 for the RaspeberryPi
+        const char *env;
+        if (method[4] != '\0') {
+            if (!isdigit(method[4]))
+                return -1;
+            pin = atoi(&method[4]);
+        }
+        else if ((env = getenv("PROPELLER_LOAD_GPIO")) != NULL) {
+            if (!isdigit(env[0]))
+                return -1;
+            pin = atoi(env);
+        }
         reset_method = RESET_WITH_GPIO;
-        gpio_export(17);
-        gpio_write(17, 0);
-        gpio_direction(17, 1);
+        gpio_export(pin);
+        gpio_write(pin, 0);
+        gpio_direction(pin, 1);
     }
 #endif
     else {
