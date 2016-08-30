@@ -2,8 +2,29 @@
 # propeller-load Makefile #
 ###########################
 
-BUILDROOT?=.
 TARGET?=/opt/parallax
+
+ifeq ($(CROSS),)
+  CC=gcc
+  BUILDROOT?=$(realpath ..)/propeller-load-build
+else
+  BUILDROOT?=$(realpath ..)/propeller-load-$(CROSS)-build
+  ifeq ($(CROSS),win32)
+    CROSS_TARGET=i686-w64-mingw32
+    CC=$(CROSS_TARGET)-gcc
+    OS=msys
+    EXT=.exe
+  else
+    ifeq ($(CROSS),rpi)
+      CROSS_TARGET=arm-linux-gnueabihf
+      OS=linux
+      EXT=
+      CC=$(CROSS_TARGET)-gcc
+    else
+      echo "Unknown cross compilation selected"
+    endif
+  endif
+endif
 
 SRCDIR=src
 SPINDIR=spin
@@ -17,8 +38,7 @@ INSTALLBINDIR=$(TARGET)/bin
 INSTALLLIBDIR=$(TARGET)/propeller-load
 INSTALLGDBDIR=$(TARGET)/lib/gdb
 
-CC=gcc
-TOOLCC=$(CC)
+TOOLCC=gcc
 ECHO=echo
 MKDIR=mkdir -p
 CP=cp
@@ -97,7 +117,7 @@ $(OBJDIR)/serial_helper2.binary
 ##########################
 
 info:
-	@$(ECHO) TOOLCC: $(TOOLCC)
+	@$(ECHO) CC: $(CC)
 	@$(ECHO) CFLAGS: $(CFLAGS)
 	@$(ECHO) LDFLAGS: $(LDFLAGS)
 	@$(ECHO) SPIN: $(SPIN)
@@ -288,8 +308,8 @@ $(OBJDIR)/%.c:	$(PROPOBJDIR)/%.bin bin2c $(OBJDIR)/dir-created
 	@$(ECHO) bin2c $@
 
 $(OBJDIR)/%.o:	$(OBJDIR)/%.c $(HDRS)
-	@$(TOOLCC) $(CFLAGS) -c $< -o $@
-	@$(ECHO) create .o with $(TOOLCC) $@
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(ECHO) create .o with $(CC) $@
 
 ################
 # MAIN TARGETS #
@@ -299,30 +319,30 @@ $(OBJDIR)/%.o:	$(OBJDIR)/%.c $(HDRS)
 propeller-load:		$(BINDIR)/propeller-load$(EXT)
 
 $(BINDIR)/propeller-load$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-created bin2c $(OBJS)
-	@$(TOOLCC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+	@$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 	@$(ECHO) $@
 
 .PHONY:	propeller-elf-image-size
 propeller-elf-image-size:		$(BINDIR)/propeller-elf-image-size$(EXT)
 
 $(BINDIR)/propeller-elf-image-size$(EXT):	$(BINDIR)/dir-created $(OBJDIR)/dir-created $(IMAGE_SIZE_OBJS)
-	@$(TOOLCC) $(LDFLAGS) -o $@ $(IMAGE_SIZE_OBJS)
+	@$(CC) $(LDFLAGS) -o $@ $(IMAGE_SIZE_OBJS)
 	@$(ECHO) $@
 
 .PHONY:	gdbstub
 gdbstub:	propeller-load
-		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub LOAD=$(LOAD) CC=$(TOOLCC)
+		$(MAKE) -C gdbstub BUILDROOT=$(realpath $(BUILDROOT))/gdbstub LOAD=$(LOAD) CC=$(CC)
 
 #########
 # RULES #
 #########
 
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c $(HDRS)
-	@$(TOOLCC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 	@$(ECHO) $@
 
 $(OBJDIR)/%.o:	$(OBJDIR)/%.c $(HDRS)
-	@$(TOOLCC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 	@$(ECHO) $@
 
 #########
@@ -333,7 +353,7 @@ $(OBJDIR)/%.o:	$(OBJDIR)/%.c $(HDRS)
 bin2c:		$(BINDIR)/bin2c$(EXT)
 
 $(BINDIR)/bin2c$(EXT):	$(OBJDIR)/dir-created $(SRCDIR)/tools/bin2c.c
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(SRCDIR)/tools/bin2c.c -o $@
+	@$(TOOLCC) $(CFLAGS) $(LDFLAGS) $(SRCDIR)/tools/bin2c.c -o $@
 	@$(ECHO) $@
 
 ###############
